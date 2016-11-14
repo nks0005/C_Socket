@@ -1,0 +1,61 @@
+%%% 윈도우 소켓 프로그램 %%%
+@ 윈도우 기반으로 구현하기
+- 헤더파일 winsock2.h를 포함해야 한다.
+- ws2_32.lib 라이브러리를 링크시켜야 한다.
+	프로젝트 '속성' 페이지 -> '구성 속성' -> '입력' -> '추가 종속성'
+
+@ 윈속(winsock)의 초기화
+- WSAStartup 함수
+	프로그램에서 요구하는 윈도우 소켓의 버전을 알리고, 해당 버전을 지원하는 라이브러리의 초기화 작업을 진행해야 한다.
+#include <winsock2.h>
+int WSAStartup(WORD wVersionRequested, LPWSADATA lpWSAData);
+	wVersionRequested	: 프로그래머가 사용할 원속의 버전정보 전달.
+	lpWSAData			: WSADATA라는 구조체 변수의 주소 값 전달.
+>> 성공 시 0, 실패 시 0이 아닌 에러코드 값 반환
+	만약에 사용할 소켓의 버전이 1.2라면 1이 주버전이고 2가 부 버전이므로 0x0201로 전달하면 되지만,
+	현재 소켓프로그래밍에 사용되는 버전은 2.2이므로 0x0202를 전달해야한다.
+	하지만, 바이트 단위로 쪼개서 버전정보를 설정하는 것이 번거롭기 때문에, 매크로 함수인 MAkEWORD가 제공되고 있다.
+		MAKEWORD(2, 2);
+	
+	두번째 매개변수 lpWSAData는 WSADATA 구조체 변수의 주소 값을 인자로 전달해야 한다.
+	(lpWSAData는 WSADATA의 포인터 형이다.) 
+int main(int argc, char* argv[])
+{
+	WSADATA wsaData;
+	if(WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
+		ErrorHandling("WSAStartup() error!");
+	return 0;
+}
+
+@ 윈속관련 라이브러리의 초기화 방법
+	아래 함수가 원속 라이브러리의 해제에 사용되는 함수이다.
+#include <winsock2.h>
+int WSACleanup(void);
+>> 성공 시 0, 실패 시 SOCKET_ERROR 반환
+	
+@ 윈도우 기반 소켓관련 함수들
+#include <winsock2.h>
+SOCKET socket(int af, int type, int protocol); 
+	리눅스의 socket 함수와 동일한 기능
+>> 성공 시 소켓 핸들, 실패 시 INVALID_SOCKET 반환
+
+int bind(SOCKET s, const struct sockaddr *name, int namelen);
+	리눅스의 bind 함수와 동일한 기능을 제공. 즉, IP주소와 PORT번호의 할당을 목적으로 호출되는 함수이다.
+>> 성공 시 0, 실패 시 SOCKET_ERROR 반환
+
+int listen(SOCKET s, int backlog); 
+	소켓이 클라이언트 프로그램의 연결 요청을 받아들일 수 있는 상태가 되게 하는 것을 목적으로 호출되는 함수이다.
+>> 성공 시 0, 실패 시 SOCKET_ERROR 반환
+
+SOCKET accept(SOCKET s, struct sockaddr *addr, int *addrlen);
+	클라이언트 프로그램에서의 연결 요청을 수락할 때 호출하는 함수이다.
+>> 성공 시 소켓 핸들, 실패 시 INVALID_SOCKET 반환
+
+int connect(SOCKET s, const struct sockaddr *name, int namelen);
+	클라이언트 프로그램에서 소켓을 기반으로 연결요청을 할 때 호출되는 함수로써, 리눅스의 connect 함수와 동일한 기능을 제공한다.
+>> 성공 시 0, 실패 시 SOCKET_ERROR 반환
+
+int closesocket(SOCKET s);
+	소켓을 닫을 때 호출하는 함수이다.
+>> 성공 시 0, 실패 시 SOCKET_ERROR 반환
+
