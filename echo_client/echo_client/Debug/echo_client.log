@@ -1,0 +1,5 @@
+﻿  소스.cpp
+d:\c_socket\echo_client\echo_client\소스.cpp(26): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+  c:\program files (x86)\windows kits\8.1\include\um\winsock2.h(1850): note: 'inet_addr' 선언을 참조하십시오.
+  echo_client.vcxproj -> D:\C_Socket\echo_client\Debug\echo_client.exe
+  echo_client.vcxproj -> D:\C_Socket\echo_client\Debug\echo_client.pdb (Full PDB)
