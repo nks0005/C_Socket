@@ -1,0 +1,9 @@
+﻿  소스.cpp
+d:\c_socket\gethostbyaddr\gethostbyaddr\소스.cpp(23): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+  c:\program files (x86)\windows kits\8.1\include\um\winsock2.h(1850): note: 'inet_addr' 선언을 참조하십시오.
+d:\c_socket\gethostbyaddr\gethostbyaddr\소스.cpp(24): warning C4996: 'gethostbyaddr': Use getnameinfo() or GetNameInfoW() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+  c:\program files (x86)\windows kits\8.1\include\um\winsock2.h(2216): note: 'gethostbyaddr' 선언을 참조하십시오.
+d:\c_socket\gethostbyaddr\gethostbyaddr\소스.cpp(33): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+  c:\program files (x86)\windows kits\8.1\include\um\winsock2.h(1868): note: 'inet_ntoa' 선언을 참조하십시오.
+  GetHostByAddr.vcxproj -> D:\C_Socket\GetHostByAddr\Debug\GetHostByAddr.exe
+  GetHostByAddr.vcxproj -> D:\C_Socket\GetHostByAddr\Debug\GetHostByAddr.pdb (Full PDB)
