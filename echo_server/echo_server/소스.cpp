@@ -21,8 +21,7 @@ int main(int argc, char *argv[])
 	if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
 		ErrorHandling("WSAStartup() error!");
 
-	hServSock = socket(PF_INET, SOCK_STREAM, 0);
-	if (hServSock == INVALID_SOCKET)
+	if (hServSock = socket(PF_INET, SOCK_STREAM, 0) == INVALID_SOCKET)
 		ErrorHandling("socket() error");
 
 	memset(&servAddr, 0, sizeof(servAddr));
