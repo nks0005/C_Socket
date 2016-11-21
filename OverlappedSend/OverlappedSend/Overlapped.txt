@@ -1,0 +1,70 @@
+@ Overlapped IO 소켓의 생성
+#include <winsock2.h>
+SOCKET WSASocket(int af, int type, int protocol, LPWSAPROTOCOL_INFO lpProtocolInfo, GROUP g, DWORD dwFlags);
+	af				: 프로토콜 체계 정보 전달
+	type			: 소켓의 데이터 전송방식에 대한 정보 전달
+	protocol		: 두 소켓 사이에 사용되는 프로토콜 정보 전달
+	lpProtocolInfo	: 생성되는 소켓의 특성 정보를 담고 있는 WSAPROTOCOL_INFO 구조체 변수의 주소 값 전달, 필요 없는 경우 NULL 전달
+	g				: 함수의 확장을 위해서 예약되어 있는 매개변수, 따라서 0 전달
+	dwFlags			: 소켓의 속성정보 전달
+>> 성공 시 소켓의 핸들, 실패 시 INVALID_SOCKET 반환
+		== 넌-블로킹 모드의 소켓이 생성됨
+			WSASocket(PF_INET, SOCK_STREAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED);
+
+@ Overlapped IO를 진행하는 WSASend 함수
+#include <winsock2.h>
+int WSASend(SOCKET s, LPWSABUF lpBuffers, DWORD< dwBufferCount, LPDWORD lpNumberOfBytesSent, DWORD dwFlags, LPWSAOVERLAPPED lpOverlapped, LPWSAOVERLAPEED_COMPLETION_ROUTINE lpCompletionRoutine);
+	s					: 소켓의 핸들 전달, Overlapped IO 속성이 부여된 소켓의 핸들 전달시 Overlapped IO 모델로 출력 진행
+	lpBuffers			: 전송할 데이터 정보를 지니는 WSABUF 구조체 변수들로 이루어진 배열의 주소 값 전달
+		typedef struct __WSABUF
+		{
+			u_long len; // 전송할 데이터의 크기
+			char FAR* buf; // 버퍼의 주소 값
+		} WSABUF, *LPWSABUF;
+	dwBufferCount		: 두 번째 인자로 전달된 배열의 길이 정보 전달
+	lpNumberOfBytesSent	: 전송된 바이트 수가 저장될 변수의 주소 값 전달
+	dwFlags				: 함수의 데이터 전송 특성을 변경하는 경우에 사용, 예로 MSG_OOB를 전달하면 OOB 모드 데이터 전송
+	lpOverlapped		: WSAOVERLAPPED 구조체 변수의 주소 값 전달, Event 오브젝트를 사용해서 데이터 전송의 완료를 확인하는 경우에 사용되는 매개변수
+		typedef struct _WSAOVERLAPPED
+		{
+			DWORD Internal;
+			DWORD InternalHigh;
+			DWORD Offset;
+			DWORD OffsetHigh;
+			WSAEVENT hEvent;
+		} WSAOVERLAPPED, *LPWSAOVERLAPPED;
+	lpCompletionRoutine : Completion Routine이라는 함수의 주소 값 전달, 이를 통해서도 데이터 전송의 완료를 확인할 수 있다.
+>> 성공 시 0, 실패 시 SOCKET_ERROR 반환
+	WSAEVENT event;
+	WSAOVERLAPPED overlapped;
+	WSABUF dataBuf;
+	char buf[BUF_SIZE] = "전송할 데이터";
+	int recvBytes=0;
+	...
+	event = WSACreateEvent();
+	memset(&overlapped, 0, sizeof(overlapped));
+	overlapped.hEvent = event;
+	dataBuf.len = sizeof(buf);
+	dataBuf.buf = buf;
+	WSASend(hSocket, &dataBuf, 1, &recvBytes, 0, &overlapped, NULL);
+
+@ WSAGetOverlappedResult
+#include <winsock2.h>
+BOOL WSAGetOverlappedResult(SOCKET s, LPWSAOVERLAPPED lpOverlapped, LPDWORD lpcbTransfer, BOOL fWait, LPDWORD lpdwFlags);
+	s				: Overlapped IO가 진행된 소켓의 핸들
+	lpOverlapped	: Overlapped IO 진행 시 전달한 WSAOVERLAPPED 구조체 변수의 주소값 전달
+	lpcbTransfer	: 실제 송수신된 바이트 크기를 저장할 변수의 주소 값 전달
+	fWait			: 여전히 IO가 진행중인 경우, TRUE 전달 시 IO가 완료될때 까지 대기를 하기 되고, FALSE 전달 시 FALSE를 반환하면서 함수를 빠져나옴
+	lpdwFlags		: WSARecv 함수가 호출된 경우, 부수적인 정보(수신된 메시지가 OOB 메시지인지와 같은)를 얻기 위해 사용된다. 불필요하면 NULL를 전달한다.
+>> 성공시 TRUE, 실패 시 FALSE 반환
+
+@ Overlapped IO를 진행하는 WSARecv 함수
+#include <winsock2.h>
+int WSARecv(SOCKET s, LPWSABUF lpBuffers, DWORD dwBufferCount, LPDWORD lpNumberOfBytesRecvd, LPDWORD lpFlags, LPWSAOVERLAPPED lpOverlapped, LPWSAOVERLAPPED_COMPLETION_ROUTINE lpCompletionRoutine);
+	s						: Overlapped IO 속성이 부여된 소켓의 핸들 전달
+	lpBuffers				: 수신된 데이터 정보가 저장될 버퍼의 정보를 지니는 WSABUF 구조체 배열의 주소 값 전달
+	dwBufferCount			: 두 번째 인자로 전달된 배열의 길이 정보 전달
+	lpNumberOfBytesRecvd	: 수신된 데이터의 크기 정보가 저장될 변수의 주소 값 전달
+	lpFlags					: 전송특성과 관련된 정보를 저장하거나 수신하는 경우에 사용된다
+	lpOverlapped			: WSAOVERLAPPED 구조체 변수의 주소 값 전달
+	lpCompletionRoutine		: Completion Routine이라는 함수의 주소 값 전달

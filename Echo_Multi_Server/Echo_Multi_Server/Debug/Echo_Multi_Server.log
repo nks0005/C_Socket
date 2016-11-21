@@ -1,0 +1,5 @@
+﻿  소스.cpp
+c:\users\hans\documents\visual studio 2015\projects\echo_multi_server\echo_multi_server\소스.cpp(59): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+  c:\program files (x86)\windows kits\8.1\include\um\winsock2.h(1868): note: 'inet_ntoa' 선언을 참조하십시오.
+  Echo_Multi_Server.vcxproj -> c:\users\hans\documents\visual studio 2015\Projects\Echo_Multi_Server\Debug\Echo_Multi_Server.exe
+  Echo_Multi_Server.vcxproj -> c:\users\hans\documents\visual studio 2015\Projects\Echo_Multi_Server\Debug\Echo_Multi_Server.pdb (Full PDB)
